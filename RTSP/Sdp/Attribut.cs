@@ -52,8 +52,7 @@ namespace Rtsp.Sdp
 
             // Call parser of child type
             Type childType;
-            attributMap.TryGetValue(listValues[0], out childType);
-            if (childType != null)
+            if (attributMap.TryGetValue(listValues[0], out childType))
             {
                 var defaultContructor = childType.GetConstructor(Type.EmptyTypes);
                 returnValue = defaultContructor.Invoke(Type.EmptyTypes) as Attribut;
