@@ -17,7 +17,7 @@ namespace Rtsp.Sdp
             if(string.IsNullOrEmpty(line))
                 return new KeyValuePair<string, string>(null, null);
 
-            
+
             string[] parts = line.Split(new char[] { '=' }, 2);
             if (parts.Length != 2)
                 throw new InvalidDataException();
@@ -107,7 +107,7 @@ namespace Rtsp.Sdp
             }
 
             // bandwidth optional
-            if (value.Key == "b")
+            while (value.Key == "b")
             {
                 returnValue.Bandwidth = Bandwidth.Parse(value.Value);
                 value = GetKeyValue(sdpStream);
@@ -186,7 +186,7 @@ namespace Rtsp.Sdp
             }
 
             // bandwidth optional
-            if (value.Key == "b")
+            while (value.Key == "b")
             {
                 returnValue.Bandwidth = Bandwidth.Parse(value.Value);
                 value = GetKeyValue(sdpStream);
@@ -264,6 +264,6 @@ namespace Rtsp.Sdp
             }
 
         }
-    
+
     }
 }
