@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Rtsp
 {
@@ -61,14 +60,14 @@ namespace Rtsp
     */
 
 
-    public class AACPayload
+    public class AACPayload : IPayloadProcessor
     {
-        public uint ObjectType = 0;
-        public uint FrequencyIndex = 0;
-        public uint ChannelConfiguration = 0;
+        public int ObjectType { get; set; } = 0;
+        public int FrequencyIndex { get; set; } = 0;
+        public int ChannelConfiguration { get; set; } = 0;
 
         // Constructor
-        public AACPayload(String config_string)
+        public AACPayload(string config_string)
         {
             /***
             5 bits: object type
@@ -83,7 +82,7 @@ namespace Rtsp
 
             // config is a string in hex eg 1490 or 0x1210
             // Read each ASCII character and add to a bit array
-            BitStream bs = new BitStream();
+            BitStream bs = new();
             bs.AddHexString(config_string);
 
             // Read 5 bits
@@ -96,7 +95,8 @@ namespace Rtsp
             ChannelConfiguration = bs.Read(4);
         }
 
-        public List<byte[]> Process_AAC_RTP_Packet(byte[] rtp_payload, int rtp_marker) {
+        public List<byte[]> ProcessRTPPacket(byte[] rtp_payload, int rtp_marker)
+        {
 
             // RTP Payload for MPEG4-GENERIC can consist of multple blocks.
             // Each block has 3 parts
@@ -105,11 +105,35 @@ namespace Rtsp
             // Part 3 - Access Unit Audio Data
 
             // The rest of the RTP packet is the AMR data
-            List<byte[]> audio_data = new List<byte[]>();
+            List<byte[]> audio_data = new();
 
             int ptr = 0;
 
-            while (true) {
+            if (ptr + 2 > rtp_payload.Length) return audio_data; // 2 bytes for AU Header Length
+
+            // Get Size of the AU Header
+            int au_headers_length_bits = (((rtp_payload[ptr] << 8) + (rtp_payload[ptr + 1] << 0))); // 16 bits
+            int au_headers_length = (int)Math.Ceiling((double)au_headers_length_bits / 8.0);
+            ptr += 2;
+
+            int cnt = 0;
+            for(int p = 0; p < au_headers_length>>1; p++)
+            {
+                int aac_frame_size = (((rtp_payload[ptr + 2 * p] << 8) + (rtp_payload[ptr + 2 * p + 1] << 0)) >> 3); // 13 bits
+                int aac_index_delta = rtp_payload[ptr + 2 * p + 1] & 0x03; // 3 bits
+
+                // extract the AAC block
+                if ((ptr + au_headers_length + cnt ) + aac_frame_size > rtp_payload.Length) break; // not enough data to copy
+                byte[] aac_data = new byte[aac_frame_size];
+                Array.Copy(rtp_payload, (ptr + au_headers_length + cnt), aac_data, 0, aac_frame_size);
+                audio_data.Add(aac_data);
+
+                cnt += aac_frame_size;
+            }
+
+            /*
+            while (true)
+            {
                 if (ptr + 4 > rtp_payload.Length) break; // 2 bytes for AU Header Length, 2 bytes of AU Header payload
 
                 // Get Size of the AU Header
@@ -118,17 +142,18 @@ namespace Rtsp
                 ptr += 2;
 
                 // Examine the AU Header. Get the size of the AAC data
-                int aac_frame_size = (((rtp_payload[ptr] << 8) + (rtp_payload[ptr+1] << 0)) >> 3); // 13 bits
-                int aac_index_delta = rtp_payload[ptr+1] & 0x03; // 3 bits
+                int aac_frame_size = (((rtp_payload[ptr] << 8) + (rtp_payload[ptr + 1] << 0)) >> 3); // 13 bits
+                int aac_index_delta = rtp_payload[ptr + 1] & 0x03; // 3 bits
                 ptr += au_headers_length;
 
                 // extract the AAC block
                 if (ptr + aac_frame_size > rtp_payload.Length) break; // not enough data to copy
                 byte[] aac_data = new byte[aac_frame_size];
-                System.Array.Copy(rtp_payload, ptr, aac_data, 0, aac_frame_size);
+                Array.Copy(rtp_payload, ptr, aac_data, 0, aac_frame_size);
                 audio_data.Add(aac_data);
                 ptr += aac_frame_size;
             }
+            */
 
             return audio_data;
         }
