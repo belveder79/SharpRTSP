@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,9 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rtsp</RootNamespace>
     <AssemblyName>Rtsp</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFramework>net8.0</TargetFramework>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
     <StyleCopOutputFile>StyleCopViolations.xml</StyleCopOutputFile>
   </PropertyGroup>
@@ -47,7 +48,6 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -55,10 +55,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+  <!--
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.5.10\lib\net40-client\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -67,7 +65,12 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml" /> 
+    <Reference Include="System.IO.Compression" /> 
+  -->
+  <Reference Include="NLog">
+      <HintPath>..\packages\NLog.5.2.8\lib\net45\NLog.dll</HintPath>
+  </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IRTSPTransport.cs" />
@@ -88,7 +91,7 @@
     <Compile Include="Messages\RTSPRequestTeardown.cs" />
     <Compile Include="Messages\RTSPResponse.cs" />
     <Compile Include="Messages\RTSPTransport.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- <Compile Include="Properties\AssemblyInfo.cs" /> -->
     <Compile Include="RTSPListener.cs" />
     <Compile Include="RTSPMessageEventArgs.cs" />
     <Compile Include="RTSPTCPTransport.cs" />
@@ -120,7 +123,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" /> -->
   <PropertyGroup>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
