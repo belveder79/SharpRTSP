@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Rtsp</RootNamespace>
     <AssemblyName>Rtsp</AssemblyName>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net4.8</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
